@@ -2,26 +2,46 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      videos: exampleVideoData,
       currentVideo: exampleVideoData[0]
     };
+    // props.searchYouTube({ key: YOUTUBE_API_KEY, query: '', max: 5 }, () => {});
+  }
+
+  componentDidMount() {
+    this.onYouTubeSearch('dogs');
   }
 
   changeVideoOnClick(newVideo) {
-    // console.log('clicked');
     this.setState({
       currentVideo: newVideo
     });
   }
 
+  onYouTubeSearch(query) {
+    var options = { 
+      key: this.props.APIKey,
+      query: query,
+      max: 5 
+    };
+
+    this.props.searchYouTube (options, (videoData) =>
+      this.setState({
+        videos: videoData,
+        currentVideo: videoData[0]
+      })
+    );
+  }
+
   render() {
     return (
       <div>
-        <Nav />
+        <Nav onYouTubeSearch={this.onYouTubeSearch.bind(this)}/>
         <div className="col-md-7">
           <VideoPlayer video={this.state.currentVideo}/>
         </div>
         <div className="col-md-5">
-          <VideoList videos={exampleVideoData} changeVideoOnClick={this.changeVideoOnClick.bind(this)} />
+          <VideoList videos={this.state.videos} changeVideoOnClick={this.changeVideoOnClick.bind(this)} />
         </div>
       </div>
     );
